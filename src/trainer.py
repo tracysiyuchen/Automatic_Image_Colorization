@@ -56,10 +56,10 @@ class Trainer:
                 real_image = torch.cat([inputs, targets], dim=1)
                 loss = self.criterion(outputs_lab, real_image)
                 total_loss += loss.item()
-                # predicted = lab_to_rgb(inputs, outputs)[0]
-                # plt.imshow(predicted)
-                # plt.axis('off')
-                # plt.show()
+                predicted = lab_to_rgb(inputs, outputs)[0]
+                plt.imshow(predicted)
+                plt.axis('off')
+                plt.show()
         average_loss = total_loss / len(test_loader)
         print(f'Test Loss: {average_loss:.4f}')
 
