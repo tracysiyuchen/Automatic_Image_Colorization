@@ -52,11 +52,11 @@ The main script for training the model is `train.py`. Below are the flags and op
 You can specify the model type using the `--model` flag. For example:
 - For CNN: 
   ```sh
-  python train.py --model CNN
+  python train.py --model cnn
   ```
 - For MobileNet: 
   ```sh
-  python train.py --model MobileNet
+  python train.py --model mobilenet
   ```
 
 The training progress and results will be displayed in the console.
