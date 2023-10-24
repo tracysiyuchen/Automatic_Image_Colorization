@@ -2,8 +2,8 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
-from dataset import ImageDataset
-from util import *
+from src.dataset import ImageDataset
+from src.util import *
 import matplotlib.pyplot as plt
 
 

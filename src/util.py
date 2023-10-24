@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from skimage.color import rgb2lab, lab2rgb
 import torch
+from src.models import *
 
 
 def split_data(gray_images, ab_images, splits=[0.7, 0.1, 0.2]):
@@ -39,3 +40,12 @@ def lab_to_rgb(L, ab):
         img_rgb = lab2rgb(img)
         rgb_imgs.append(img_rgb)
     return np.stack(rgb_imgs, axis=0)
+
+
+def get_model(name):
+    if name.lower() == 'cnn':
+        return CNN()
+    elif name.lower() == 'mobilenet':
+        return MobileNet()
+    else:
+        raise ValueError("Invalid model name.")
