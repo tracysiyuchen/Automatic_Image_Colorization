@@ -47,6 +47,7 @@ The main script for training the model is `train.py`. Below are the flags and op
 - `--num-images`: Number of images to load. Default is `1000`.
 - `--split-ratios`: Train, validation, and test split ratios. Default is `[0.7, 0.1, 0.2]`.
 - `--batch-size`: Batch size for training. Default is `64`.
+- `--epoch`:Number of epochs for training. Default is `10`. 
 - `--model`: The model to use for training. Options are `cnn` or `mobilenet`. Default is `cnn`.
 
 You can specify the model type using the `--model` flag. For example:

@@ -90,11 +90,15 @@ class Trainer:
         else:
             print(f'Validation Loss: {average_loss:.4f}')
 
-    def test(self, test_loader):
+    def test(self, test_loader,model_name):
         self.model.eval()
         total_loss = 0
         total_psnr = 0
         total_ssim = 0
+        grayscale_images_list = []
+        predicted_images_list = []
+        desired_output_list = []
+
         with torch.no_grad():
             for inputs, targets in test_loader:
                 inputs = inputs.unsqueeze(1).repeat(1, 3, 1, 1).float().to(self.device)
@@ -119,12 +123,51 @@ class Trainer:
                     ssim_val = ssim(output_image, target_image, data_range=2, multichannel=True, channel_axis=0)
                     total_psnr += psnr_val
                     total_ssim += ssim_val
+
+    # for picture printing
+                predicted_images = lab_to_rgb(l_channel, outputs)
+                desired_outputs = lab_to_rgb(l_channel, targets)
+
+                grayscale_images_list.extend(l_channel.squeeze().cpu().numpy())
+                predicted_images_list.extend(predicted_images)
+                desired_output_list.extend(desired_outputs)
+                if len(grayscale_images_list) >= 5:
+                    break
+    
+            plt.figure(figsize=(10, 10))
+            for i in range(5):
+                # Display the grayscale image on the first column
+                plt.subplot(5, 3, 3*i + 1)
+                plt.imshow(grayscale_images_list[i], cmap='gray')
+                plt.axis('off')
+                if i == 0:
+                  plt.title('Grayscale')
+
+                # Display the predicted image on the second column
+                plt.subplot(5, 3, 3*i + 2)
+                plt.imshow(predicted_images_list[i])
+                plt.axis('off')
+                if i == 0:
+                  plt.title(f'{model_name} Result')
+
+                # Display the desired output on the third column
+                plt.subplot(5, 3, 3*i + 3)
+                plt.imshow(desired_output_list[i])
+                plt.axis('off')
+                if i == 0:
+                  plt.title('Desired Result')
+
+        plt.tight_layout()
+        plt.savefig(f'output_figure_{model_name}.png', dpi=500, format='png')
+
         average_loss = total_loss / len(test_loader)
         average_psnr = total_psnr / len(test_loader.dataset)
         average_ssim = total_ssim / len(test_loader.dataset)
         print(f'Test Loss: {average_loss:.4f}, PSNR: {average_psnr:.4f}, SSIM: {average_ssim:.4f}')
 
     def train(self, train_data, val_data, test_data=None):
+        model_name = self.model.__class__.__name__
+
         train_dataset = ImageDataset(*train_data)
         train_loader = DataLoader(train_dataset, batch_size=self.batch_size, shuffle=True)
 
@@ -143,4 +186,4 @@ class Trainer:
             self.validate_one_epoch(val_loader, epoch)
 
         if test_loader is not None:
-            self.test(test_loader)
+            self.test(test_loader,model_name)
