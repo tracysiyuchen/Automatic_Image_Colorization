@@ -11,6 +11,6 @@ class ImageDataset(Dataset):
         return len(self.gray_images)
 
     def __getitem__(self, idx):
-        gray_image = self.gray_images[idx]/128 - 1
-        ab_image = self.ab_images[idx]/128 - 1
+        gray_image = self.gray_images[idx]/127.5 - 1
+        ab_image = self.ab_images[idx]/127.5 - 1
         return gray_image, ab_image
