@@ -134,6 +134,7 @@ class GAN_Trainer:
         total_loss = 0
         total_psnr = 0
         total_ssim = 0
+        total_images = 0
         grayscale_images_list = []
         predicted_images_list = []
         desired_output_list = []
@@ -150,6 +151,7 @@ class GAN_Trainer:
                 l_channel = conditioned_images[:, :1, :, :]
                 outputs_lab = torch.cat([l_channel, fake_images], dim=1)
                 real_image = torch.cat([l_channel, real_images], dim=1)
+                total_images += outputs_lab.size(0)
 
 
                 for i in range(fake_images.size(0)):
@@ -196,8 +198,8 @@ class GAN_Trainer:
         plt.savefig(f'output_figure_{model_name}.png', dpi=500, format='png')
 
         average_loss = total_loss / len(test_loader)
-        average_psnr = total_psnr / len(test_loader.dataset)
-        average_ssim = total_ssim / len(test_loader.dataset)
+        average_psnr = total_psnr / total_images
+        average_ssim = total_ssim / total_images
         print(f'Test Loss: {average_loss:.4f}, PSNR: {average_psnr:.4f}, SSIM: {average_ssim:.4f}')
 
     def train(self, train_data, val_data, test_data=None):

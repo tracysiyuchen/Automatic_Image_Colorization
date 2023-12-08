@@ -23,13 +23,17 @@ class Trainer:
         total_loss = 0
         total_psnr = 0
         total_ssim = 0
+        total_images = 0  # Keep track of total images processed
+
         for inputs, targets in train_loader:
+            batch_size = inputs.size(0)
+            total_images += batch_size  # Update total images processed
+
             inputs = inputs.unsqueeze(1).repeat(1, 3, 1, 1).float().to(self.device)
             targets = targets.permute(0, 3, 1, 2).float().to(self.device)
             self.optimizer.zero_grad()
             outputs = self.model(inputs)
-            # outputs_lab = outputs
-            # real_image = targets
+
             l_channel = inputs[:, :1, :, :]  # Selecting the first channel
             outputs_lab = torch.cat([l_channel, outputs], dim=1)
             real_image = torch.cat([l_channel, targets], dim=1)
@@ -38,10 +42,11 @@ class Trainer:
             total_loss += loss.item()
             loss.backward()
             self.optimizer.step()
+
             if epoch % 50 == 0:
                 for i in range(outputs_lab.size(0)):
-                    output_image = outputs_lab[i].detach().numpy()
-                    target_image = real_image[i].detach().numpy()
+                    output_image = outputs_lab[i].detach().cpu().numpy()
+                    target_image = real_image[i].detach().cpu().numpy()
                     psnr_val = psnr(output_image, target_image, data_range=2)
                     ssim_val = ssim(output_image, target_image, data_range=2, multichannel=True, channel_axis=0)
                     total_psnr += psnr_val
@@ -49,11 +54,12 @@ class Trainer:
 
         average_loss = total_loss / len(train_loader)
         if epoch % 50 == 0:
-            average_psnr = total_psnr / len(train_loader.dataset)
-            average_ssim = total_ssim / len(train_loader.dataset)
+            average_psnr = total_psnr / total_images
+            average_ssim = total_ssim / total_images
             print(f'Training Loss: {average_loss:.4f}, PSNR: {average_psnr:.4f}, SSIM: {average_ssim:.4f}')
         else:
             print(f'Training Loss: {average_loss:.4f}')
+
 
 
     def validate_one_epoch(self, val_loader, epoch):
@@ -61,13 +67,17 @@ class Trainer:
         total_loss = 0
         total_psnr = 0
         total_ssim = 0
+        total_images = 0  # Keep track of total images processed
+
         with torch.no_grad():
             for inputs, targets in val_loader:
+                batch_size = inputs.size(0)
+                total_images += batch_size  # Update total images processed
+
                 inputs = inputs.unsqueeze(1).repeat(1, 3, 1, 1).float().to(self.device)
                 targets = targets.permute(0, 3, 1, 2).float().to(self.device)
                 outputs = self.model(inputs)
-                # outputs_lab = outputs
-                # real_image = targets
+
                 l_channel = inputs[:, :1, :, :]  # Selecting the first channel
                 outputs_lab = torch.cat([l_channel, outputs], dim=1)
                 real_image = torch.cat([l_channel, targets], dim=1)
@@ -84,23 +94,26 @@ class Trainer:
 
         average_loss = total_loss / len(val_loader)
         if epoch % 50 == 0:
-            average_psnr = total_psnr / len(val_loader.dataset)
-            average_ssim = total_ssim / len(val_loader.dataset)
+            average_psnr = total_psnr / total_images
+            average_ssim = total_ssim / total_images
             print(f'Validation Loss: {average_loss:.4f}, PSNR: {average_psnr:.4f}, SSIM: {average_ssim:.4f}')
         else:
             print(f'Validation Loss: {average_loss:.4f}')
+
 
     def test(self, test_loader,model_name):
         self.model.eval()
         total_loss = 0
         total_psnr = 0
         total_ssim = 0
+        total_images = 0
         grayscale_images_list = []
         predicted_images_list = []
         desired_output_list = []
 
         with torch.no_grad():
             for inputs, targets in test_loader:
+
                 inputs = inputs.unsqueeze(1).repeat(1, 3, 1, 1).float().to(self.device)
                 targets = targets.permute(0, 3, 1, 2).float().to(self.device)
                 outputs = self.model(inputs)
@@ -109,6 +122,7 @@ class Trainer:
                 l_channel = inputs[:, :1, :, :]
                 outputs_lab = torch.cat([l_channel, outputs], dim=1)
                 real_image = torch.cat([l_channel, targets], dim=1)
+                total_images += outputs_lab.size(0)
 
                 loss = self.criterion(outputs_lab, real_image)
                 total_loss += loss.item()
@@ -133,7 +147,7 @@ class Trainer:
                 desired_output_list.extend(desired_outputs)
                 if len(grayscale_images_list) >= 5:
                     break
-    
+
             plt.figure(figsize=(10, 10))
             for i in range(5):
                 # Display the grayscale image on the first column
@@ -161,8 +175,8 @@ class Trainer:
         plt.savefig(f'output_figure_{model_name}.png', dpi=500, format='png')
 
         average_loss = total_loss / len(test_loader)
-        average_psnr = total_psnr / len(test_loader.dataset)
-        average_ssim = total_ssim / len(test_loader.dataset)
+        average_psnr = total_psnr / total_images
+        average_ssim = total_ssim / total_images
         print(f'Test Loss: {average_loss:.4f}, PSNR: {average_psnr:.4f}, SSIM: {average_ssim:.4f}')
 
     def train(self, train_data, val_data, test_data=None):
