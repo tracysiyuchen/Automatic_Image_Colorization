@@ -48,7 +48,7 @@ class Trainer:
                     output_image = outputs_lab[i].detach().cpu().numpy()
                     target_image = real_image[i].detach().cpu().numpy()
                     psnr_val = psnr(output_image, target_image, data_range=2)
-                    ssim_val = ssim(output_image, target_image, data_range=2, multichannel=True, channel_axis=0)
+                    ssim_val = ssim(output_image, target_image, data_range=2, channel_axis=0)
                     total_psnr += psnr_val
                     total_ssim += ssim_val
 
@@ -88,7 +88,7 @@ class Trainer:
                         output_image = outputs_lab[i].cpu().numpy()
                         target_image = real_image[i].cpu().numpy()
                         psnr_val = psnr(output_image, target_image, data_range=2)
-                        ssim_val = ssim(output_image, target_image, data_range=2, multichannel=True, channel_axis=0)
+                        ssim_val = ssim(output_image, target_image, data_range=2, channel_axis=0)
                         total_psnr += psnr_val
                         total_ssim += ssim_val
 
@@ -134,7 +134,7 @@ class Trainer:
                     output_image = outputs_lab[i].cpu().numpy()
                     target_image = real_image[i].cpu().numpy()
                     psnr_val = psnr(output_image, target_image, data_range=2)
-                    ssim_val = ssim(output_image, target_image, data_range=2, multichannel=True, channel_axis=0)
+                    ssim_val = ssim(output_image, target_image, data_range=2, channel_axis=0)
                     total_psnr += psnr_val
                     total_ssim += ssim_val
 
