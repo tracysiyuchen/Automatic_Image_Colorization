@@ -23,6 +23,8 @@ class GAN_Trainer:
         self.epochs = epochs
         self.batch_size = batch_size
         self.device = device
+        self.generator = self.generator.to(device)
+        self.critic = self.critic.to(device)
 
     def train_one_epoch(self, train_loader, epoch, device):
         self.generator.train()
