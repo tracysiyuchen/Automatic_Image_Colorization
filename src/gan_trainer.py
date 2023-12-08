@@ -63,20 +63,17 @@ class GAN_Trainer:
 
             self.optimizer_G.zero_grad()
 
-
             fake_images = self.generator(conditioned_images)
-            l_channel = conditioned_images[:, :1, :, :]
-            outputs_lab = torch.cat([l_channel, fake_images], dim=1)
-            real_image = torch.cat([l_channel, real_images], dim=1)
-            recon_loss = self.recon_criterion(outputs_lab, real_image)
-
+            recon_loss = self.recon_criterion(fake_images, real_image)
             recon_loss.backward()
             self.optimizer_G.step()
             total_gen_loss += recon_loss.item()
 
 
-
             if epoch % 50 == 0:
+                l_channel = conditioned_images[:, :1, :, :]
+                outputs_lab = torch.cat([l_channel, fake_images], dim=1)
+                real_image = torch.cat([l_channel, real_images], dim=1)
                 fake_images = fake_images.detach()
                 for i in range(fake_images.size(0)):
                     output_image = outputs_lab[i].detach().cpu().numpy()
