@@ -10,16 +10,16 @@ from src.util import *
 import matplotlib.pyplot as plt
 
 class GAN_Trainer:
-    def __init__(self, learning_rate=0.0002, lambda_recon=100, lambda_gp=10, lambda_r1=10,
+    def __init__(self, generator, critic, learning_rate=0.0002, lambda_recon=100, lambda_gp=10, lambda_r1=10,
                  batch_size=128, lr=0.001, epochs=10, device="cpu"):
-        self.generator = MobileNet()
-        self.critic = Critic()
+        self.generator = generator
+        self.critic = critic
         self.optimizer_G = optim.Adam(self.generator.parameters(), lr=learning_rate, betas=(0.5, 0.9))
         self.optimizer_C = optim.Adam(self.critic.parameters(), lr=learning_rate, betas=(0.5, 0.9))
         self.lambda_recon = lambda_recon
         self.lambda_gp = lambda_gp
         self.lambda_r1 = lambda_r1
-        self.recon_criterion = nn.L1Loss()
+        self.recon_criterion = nn.MSELoss()
         self.epochs = epochs
         self.batch_size = batch_size
         self.device = device
@@ -62,15 +62,19 @@ class GAN_Trainer:
             total_critic_loss += loss_C.item()
 
             self.optimizer_G.zero_grad()
+
+
             fake_images = self.generator(conditioned_images)
-            recon_loss = self.recon_criterion(fake_images, real_images)
+            l_channel = conditioned_images[:, :1, :, :]
+            outputs_lab = torch.cat([l_channel, fake_images], dim=1)
+            real_image = torch.cat([l_channel, real_images], dim=1)
+            recon_loss = self.recon_criterion(outputs_lab, real_image)
+
             recon_loss.backward()
             self.optimizer_G.step()
             total_gen_loss += recon_loss.item()
 
-            l_channel = conditioned_images[:, :1, :, :]
-            outputs_lab = torch.cat([l_channel, fake_images], dim=1)
-            real_image = torch.cat([l_channel, real_images], dim=1)
+
 
             if epoch % 50 == 0:
                 fake_images = fake_images.detach()
@@ -105,12 +109,14 @@ class GAN_Trainer:
                 real_images = real_images.permute(0, 3, 1, 2).float().to(self.device)
 
                 fake_images = self.generator(conditioned_images)
-                loss = self.recon_criterion(fake_images, real_images)
-                total_loss += loss.item()
+
 
                 l_channel = conditioned_images[:, :1, :, :]
                 outputs_lab = torch.cat([l_channel, fake_images], dim=1)
                 real_image = torch.cat([l_channel, real_images], dim=1)
+
+                loss = self.recon_criterion(outputs_lab, real_image)
+                total_loss += loss.item()
 
                 if epoch % 50 == 0:
                     for i in range(fake_images.size(0)):
@@ -145,13 +151,14 @@ class GAN_Trainer:
                 real_images = real_images.permute(0, 3, 1, 2).float().to(self.device)
 
                 fake_images = self.generator(conditioned_images)
-                loss = self.recon_criterion(fake_images, real_images)
-                total_loss += loss.item()
 
                 l_channel = conditioned_images[:, :1, :, :]
                 outputs_lab = torch.cat([l_channel, fake_images], dim=1)
                 real_image = torch.cat([l_channel, real_images], dim=1)
                 total_images += outputs_lab.size(0)
+
+                loss = self.recon_criterion(outputs_lab, real_image)
+                total_loss += loss.item()
 
 
                 for i in range(fake_images.size(0)):

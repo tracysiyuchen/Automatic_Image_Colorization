@@ -1,6 +1,7 @@
 import argparse
 from src.util import *
 from src.trainer import Trainer
+from src.models import *
 from src.gan_trainer import GAN_Trainer
 import random
 import gc
@@ -17,7 +18,10 @@ def main(args):
     images_gray, images_lab = load_data(gray_path, ab_path, num_images=args.num_images)
     train_data, val_data, test_data = split_data(images_gray, images_lab, args.split_ratios)
     if(args.model.lower() == "gan"):
-        trainer = GAN_Trainer(batch_size=args.batch_size, epochs=args.epoch, lr=args.lr, device=args.device)
+        generator = MobileNet()
+        critic = Critic()
+        trainer = GAN_Trainer(generator, critic, batch_size=args.batch_size, epochs=args.epoch,
+                              lr=args.lr, device=args.device)
     else:
         model = get_model(args.model)
         trainer = Trainer(model, batch_size=args.batch_size, epochs=args.epoch, lr=args.lr, device=args.device)

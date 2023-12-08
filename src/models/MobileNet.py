@@ -8,7 +8,7 @@ class MobileNet(nn.Module):
         super(MobileNet, self).__init__()
 
         # MobileNetV2 Encoder
-        mobilenet_v2 = models.mobilenet_v2(pretrained=True)
+        mobilenet_v2 = models.mobilenet_v2(weights=models.MobileNet_V2_Weights.DEFAULT)
         self.encoder = mobilenet_v2.features
 
         # Encoder Block
