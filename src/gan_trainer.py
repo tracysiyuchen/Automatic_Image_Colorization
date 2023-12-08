@@ -75,8 +75,8 @@ class GAN_Trainer:
             if epoch % 50 == 0:
                 fake_images = fake_images.detach()
                 for i in range(fake_images.size(0)):
-                    output_image = outputs_lab[i].detach().numpy()
-                    target_image = real_image[i].detach().numpy()
+                    output_image = outputs_lab[i].detach().cpu().numpy()
+                    target_image = real_image[i].detach().cpu().numpy()
                     psnr_val = psnr(output_image, target_image, data_range=2)
                     ssim_val = ssim(output_image, target_image, data_range=2, multichannel=True, channel_axis=0)
                     total_psnr += psnr_val
@@ -114,8 +114,8 @@ class GAN_Trainer:
 
                 if epoch % 50 == 0:
                     for i in range(fake_images.size(0)):
-                        output_image = outputs_lab[i].detach().numpy()
-                        target_image = real_image[i].detach().numpy()
+                        output_image = outputs_lab[i].detach().cpu().numpy()
+                        target_image = real_image[i].detach().cpu().numpy()
                         psnr_val = psnr(output_image, target_image, data_range=2)
                         ssim_val = ssim(output_image, target_image, data_range=2, multichannel=True, channel_axis=0)
                         total_psnr += psnr_val
@@ -155,8 +155,8 @@ class GAN_Trainer:
 
 
                 for i in range(fake_images.size(0)):
-                    output_image = outputs_lab[i].detach().numpy()
-                    target_image = real_image[i].detach().numpy()
+                    output_image = outputs_lab[i].detach().cpu().numpy()
+                    target_image = real_image[i].detach().cpu().numpy()
                     psnr_val = psnr(output_image, target_image, data_range=2)
                     ssim_val = ssim(output_image, target_image, data_range=2, multichannel=True, channel_axis=0)
                     total_psnr += psnr_val
@@ -224,4 +224,3 @@ class GAN_Trainer:
 
         if test_loader is not None:
             self.test(test_loader,model_name)
-
