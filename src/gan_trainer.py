@@ -64,7 +64,7 @@ class GAN_Trainer:
             self.optimizer_G.zero_grad()
 
             fake_images = self.generator(conditioned_images)
-            recon_loss = self.recon_criterion(fake_images, real_image)
+            recon_loss = self.recon_criterion(fake_images, real_images)
             recon_loss.backward()
             self.optimizer_G.step()
             total_gen_loss += recon_loss.item()
