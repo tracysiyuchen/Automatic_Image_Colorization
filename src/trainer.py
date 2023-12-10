@@ -138,15 +138,13 @@ class Trainer:
                     total_psnr += psnr_val
                     total_ssim += ssim_val
 
-    # for picture printing
-                predicted_images = lab_to_rgb(l_channel, outputs)
-                desired_outputs = lab_to_rgb(l_channel, targets)
+                if len(grayscale_images_list) < 5:
+                    predicted_images = lab_to_rgb(l_channel, outputs)
+                    desired_outputs = lab_to_rgb(l_channel, targets)
 
-                grayscale_images_list.extend(l_channel.squeeze().cpu().numpy())
-                predicted_images_list.extend(predicted_images)
-                desired_output_list.extend(desired_outputs)
-                if len(grayscale_images_list) >= 5:
-                    break
+                    grayscale_images_list.extend(l_channel.squeeze().cpu().numpy())
+                    predicted_images_list.extend(predicted_images)
+                    desired_output_list.extend(desired_outputs)
 
             plt.figure(figsize=(10, 10))
             for i in range(5):

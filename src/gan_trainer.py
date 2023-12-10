@@ -169,11 +169,11 @@ class GAN_Trainer:
                 predicted_images = lab_to_rgb(l_channel, fake_images)
                 desired_outputs = lab_to_rgb(l_channel, real_images)
 
-                grayscale_images_list.extend(l_channel.squeeze().cpu().numpy())
-                predicted_images_list.extend(predicted_images)
-                desired_output_list.extend(desired_outputs)
-                if len(grayscale_images_list) >= 5:
-                    break
+                if len(grayscale_images_list) < 5:
+                    grayscale_images_list.extend(l_channel.squeeze().cpu().numpy())
+                    predicted_images_list.extend(predicted_images)
+                    desired_output_list.extend(desired_outputs)
+
 
             plt.figure(figsize=(10, 10))
             for i in range(5):
