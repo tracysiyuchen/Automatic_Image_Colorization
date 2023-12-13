@@ -25,7 +25,7 @@ To set up your environment and run the project, follow these steps:
    conda activate color
    ```
 
-3. Download the dataset from the Kaggle dataset "Image Colorization"(https://www.kaggle.com/datasets/shravankumar9892/image-colorization/data)  and place it in the `data` folder. Make sure you have the following structure:
+3. Download the dataset from the Kaggle dataset [Image Colorization](https://www.kaggle.com/datasets/shravankumar9892/image-colorization/data)  and place it in the `data` folder. Make sure you have the following structure:
    ```plaintext
    data/
    ├── gray_scale.npy
