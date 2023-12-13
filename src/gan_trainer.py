@@ -10,12 +10,12 @@ from src.util import *
 import matplotlib.pyplot as plt
 
 class GAN_Trainer:
-    def __init__(self, generator, critic, learning_rate=0.0002, lambda_recon=100, lambda_gp=10, lambda_r1=10,
-                 batch_size=128, lr=0.001, epochs=10, device="cpu"):
+    def __init__(self, generator, critic, lambda_recon=100, lambda_gp=10, lambda_r1=10,
+                 batch_size=128, lr=0.002, epochs=10, device="cpu"):
         self.generator = generator
         self.critic = critic
-        self.optimizer_G = optim.Adam(self.generator.parameters(), lr=learning_rate, betas=(0.5, 0.9))
-        self.optimizer_C = optim.Adam(self.critic.parameters(), lr=learning_rate, betas=(0.5, 0.9))
+        self.optimizer_G = optim.Adam(self.generator.parameters(), lr=lr, betas=(0.5, 0.9))
+        self.optimizer_C = optim.Adam(self.critic.parameters(), lr=lr, betas=(0.5, 0.9))
         self.lambda_recon = lambda_recon
         self.lambda_gp = lambda_gp
         self.lambda_r1 = lambda_r1
