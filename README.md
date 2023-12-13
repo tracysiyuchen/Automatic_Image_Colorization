@@ -51,7 +51,7 @@ The main script for training the model is `train.py`. Below are the flags and op
 - `--lr`: Learning rate for training. Default is `0.001`
 - `--device`: device used for training(cpu, cuba:0, etc). Default is  `cpu`  
 - `--seed`: Random seed for reproducibility. Default is  `None`  
-- `--model`: The model to use for training. Options are `cnn` or `mobilenet`. Default is `cnn`.
+- `--model`: The model to use for training. Options are `cnn`, `mobilenet` or `gan`. Default is `cnn`.
 
 You can specify the model type using the `--model` flag. For example:
 - For CNN: 
